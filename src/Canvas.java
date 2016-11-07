@@ -1,4 +1,5 @@
 import com.sun.corba.se.impl.ior.WireObjectKeyTemplate;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -40,7 +41,17 @@ public class Canvas extends ImageView
 
         layers.add(new Layer(width, heigth, this, "Layer1"));
 
-        this.setOnMouseDragged(e-> paint((int) e.getX(), (int) e.getY()));
+        this.setOnMouseDragged(e->
+        {
+            try {
+                paint((int) e.getX(), (int) e.getY());
+                window.setGlow(null);
+            }
+            catch (Exception ex)
+            {
+                window.setGlow(new DropShadow(5, Color.RED));
+            }
+        });
     }
 
     public void updateCanvas(int xStart, int yStart, int xEnd, int yEnd)

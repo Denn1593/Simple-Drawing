@@ -1,7 +1,9 @@
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
+import javafx.scene.effect.Effect;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.Timer;
@@ -44,7 +46,13 @@ public class Window extends Pane
         layers.getSelectionModel().select(0);
 
         newDrawing = new Button("new");
-        newDrawing.setOnAction(e->newPicture(width, height));
+        newDrawing.setOnAction(e-> {
+            Stage popup = new NewPictureWindow(this);
+            popup.initModality(Modality.WINDOW_MODAL);
+            popup.initOwner(stage);
+            popup.show();
+
+        });
 
         addLayer = new Button("Add");
         addLayer.setOnAction(e->createLayer());
@@ -91,17 +99,21 @@ public class Window extends Pane
 
     public void newPicture(int width, int height)
     {
-        this.getChildren().set(0, new Canvas(width, height, this));
+        canvas = new Canvas(width, height, this);
+        this.getChildren().set(0, canvas);
 
         updateLayout(width, height);
 
-        layers.setItems(FXCollections.observableArrayList(((Canvas) this.getChildren().get(0)).getLayers()));
+        layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
         layers.getSelectionModel().select(0);
     }
 
     private void updateLayout(int width, int height)
     {
         double margin = 20;
+
+        stage.setWidth(margin * 3 + layers.getWidth() + width);
+        stage.setHeight(height + newDrawing.getHeight() + margin * 4);
 
         this.getChildren().get(0).setLayoutX(margin);
         this.getChildren().get(0).setLayoutY(margin);
@@ -118,8 +130,6 @@ public class Window extends Pane
         moveDown.setLayoutX(margin * 4.25 + width + addLayer.getWidth() + moveUp.getWidth() + removeLayer.getWidth());
         moveDown.setLayoutY(height - moveDown.getHeight() + margin);
 
-        stage.setWidth(margin * 3 + layers.getWidth() + width);
-        stage.setHeight(height + newDrawing.getHeight() + margin * 4);
 
         colorPicker.setLayoutX(margin * 2 + tools.getWidth());
         colorPicker.setLayoutY(margin * 2 + height);
@@ -147,5 +157,10 @@ public class Window extends Pane
     public int getLayer()
     {
         return layers.getSelectionModel().getSelectedIndex();
+    }
+
+    public void setGlow(Effect effect)
+    {
+        layers.setEffect(effect);
     }
 }
