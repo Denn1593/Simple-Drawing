@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Spaytool.iml" filepath="$PROJECT_DIR$/Spaytool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spraytool.iml" filepath="$PROJECT_DIR$/Spraytool.iml" />
     </modules>
   </component>
 </project>

@@ -5,6 +5,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by dennis on 11/7/16.
@@ -37,14 +38,14 @@ public class Canvas extends ImageView
             }
         }
 
-        layers.add(new Layer(width, heigth, this));
+        layers.add(new Layer(width, heigth, this, "Layer1"));
 
         this.setOnMouseDragged(e-> paint((int) e.getX(), (int) e.getY()));
     }
 
     public void updateCanvas(int xStart, int yStart, int xEnd, int yEnd)
     {
-        for (int i = 0; i < layers.size(); i++)
+        for (int i = layers.size() - 1; i >= 0; i--)
         {
             for(int x = xStart; x < xEnd; x++)
             {
@@ -63,6 +64,40 @@ public class Canvas extends ImageView
     {
         int size = window.getSize();
         layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, tool.paint(size, window.getColor()), size);
+    }
+
+    public void moveDown(int index)
+    {
+        if(index < layers.size() - 1)
+        {
+            Collections.swap(layers, index, index + 1);
+        }
+        updateCanvas(0, 0, width, height);
+    }
+
+    public void moveUp(int index)
+    {
+        if(index > 0)
+        {
+            Collections.swap(layers, index, index - 1);
+        }
+        updateCanvas(0, 0, width, height);
+    }
+
+    public ArrayList<Layer> destroyLayer(int index)
+    {
+        layers.remove(index);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                pixelWriter.setColor(x, y, Color.WHITE);
+            }
+        }
+        updateCanvas(0, 0, width, height);
+
+        return layers;
     }
 
     public ArrayList<Layer> getLayers()

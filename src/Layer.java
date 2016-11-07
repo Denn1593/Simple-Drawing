@@ -9,9 +9,11 @@ public class Layer
     private Color[][] layer;
     private int width;
     private int height;
+    private String name;
 
-    public Layer(int width, int height, Canvas canvas)
+    public Layer(int width, int height, Canvas canvas, String name)
     {
+        this.name = name;
         this.width = width;
         this.height = height;
         this.canvas = canvas;
@@ -46,5 +48,10 @@ public class Layer
         {
             return  null;
         }
+    }
+
+    public String toString()
+    {
+        return name;
     }
 }

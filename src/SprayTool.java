@@ -21,4 +21,9 @@ public class SprayTool implements Tool
         }
         return colors;
     }
+
+    public String toString()
+    {
+        return "Spraytool";
+    }
 }
