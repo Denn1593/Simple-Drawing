@@ -9,6 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import painting.Canvas;
 import painting.Layer;
+import tools.BrushTool;
 import tools.SprayTool;
 import tools.Tool;
 
@@ -33,7 +34,8 @@ public class Window extends Pane
             54, 56, 58, 60
     ));
     private ComboBox<Tool> tools = new ComboBox<>(FXCollections.observableArrayList(
-            new SprayTool()
+            new SprayTool(),
+            new BrushTool()
     ));
 
     public Window(int width, int height, Stage stage)
@@ -45,7 +47,7 @@ public class Window extends Pane
         canvas.setLayoutX(20);
         canvas.setLayoutY(20);
 
-        layers.getItems().add(new Layer(400, 400, canvas, "painting.Layer"+canvas.getLayers().size()));
+        layers.getItems().add(new Layer(400, 400, canvas, "Layer"+canvas.getLayers().size()));
         layers.getSelectionModel().select(0);
 
         newDrawing = new Button("new");
@@ -153,7 +155,7 @@ public class Window extends Pane
 
     private void createLayer()
     {
-        canvas.getLayers().add(new Layer(canvas.getWidth(), canvas.getHeight(), canvas, "painting.Layer"+(canvas.getLayers().size() + 1)));
+        canvas.getLayers().add(new Layer(canvas.getWidth(), canvas.getHeight(), canvas, "Layer"+(canvas.getLayers().size() + 1)));
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
     }
 

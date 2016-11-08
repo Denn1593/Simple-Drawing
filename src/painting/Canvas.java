@@ -3,6 +3,7 @@ package painting;
 import GUI.Window;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -80,6 +81,21 @@ public class Canvas extends ImageView
     private void paint(int x, int y)
     {
         int size = window.getSize();
+
+        /* TODO implemented
+        Color[][] inData = new Color[size][size];
+
+        for (int i = 0; i < layers.size(); i++)
+        {
+            for (int xx = 0; xx < size; xx++)
+            {
+                for (int yy = 0; yy < size; yy++)
+                {
+                    if()
+                }
+            }
+        }*/
+
         layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, window.getTool().paint(size, window.getColor(), null), size);
     }
 
