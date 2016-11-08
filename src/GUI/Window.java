@@ -22,6 +22,7 @@ public class Window extends Pane
     private ColorPicker colorPicker;
     private Canvas canvas;
     private Button newDrawing;
+    private Button saveDrawing;
     private Button addLayer;
     private Button removeLayer;
     private Button moveUp;
@@ -50,13 +51,23 @@ public class Window extends Pane
         layers.getItems().add(new Layer(400, 400, canvas, "Layer"+canvas.getLayers().size()));
         layers.getSelectionModel().select(0);
 
-        newDrawing = new Button("new");
+        newDrawing = new Button("New");
         newDrawing.setOnAction(e-> {
             Stage popup = new NewPictureWindow(this);
-            popup.initModality(Modality.WINDOW_MODAL);
+            popup.initModality(Modality.APPLICATION_MODAL);
             popup.initOwner(stage);
             popup.show();
 
+        });
+
+        saveDrawing = new Button("Save");
+        saveDrawing.setOnAction(e->
+        {
+            SavePictureWindow popup = new SavePictureWindow(canvas);
+            popup.initModality(Modality.APPLICATION_MODAL);
+            popup.initOwner(stage);
+            popup.show();
+            popup.fixLayout();
         });
 
         addLayer = new Button("Add");
@@ -86,7 +97,7 @@ public class Window extends Pane
         size.setValue(24);
         tools.setValue(new SprayTool());
 
-        this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer);
+        this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer, saveDrawing);
 
         stage.widthProperty().addListener(e->updateLayout(width, height));
         stage.heightProperty().addListener(e->updateLayout(width, height));
@@ -151,6 +162,9 @@ public class Window extends Pane
 
         newDrawing.setLayoutX(margin * 4 + + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
         newDrawing.setLayoutY(margin * 2 + height);
+
+        saveDrawing.setLayoutX(margin * 5 + + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth());
+        saveDrawing.setLayoutY(margin * 2 + height);
     }
 
     private void createLayer()
