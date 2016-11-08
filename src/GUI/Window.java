@@ -1,3 +1,5 @@
+package GUI;
+
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
@@ -5,9 +7,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import painting.Canvas;
+import painting.Layer;
+import tools.SprayTool;
+import tools.Tool;
 
 /**
  * Created by dennis on 11/7/16.
@@ -42,7 +45,7 @@ public class Window extends Pane
         canvas.setLayoutX(20);
         canvas.setLayoutY(20);
 
-        layers.getItems().add(new Layer(400, 400, canvas, "Layer"+canvas.getLayers().size()));
+        layers.getItems().add(new Layer(400, 400, canvas, "painting.Layer"+canvas.getLayers().size()));
         layers.getSelectionModel().select(0);
 
         newDrawing = new Button("new");
@@ -150,7 +153,7 @@ public class Window extends Pane
 
     private void createLayer()
     {
-        canvas.getLayers().add(new Layer(canvas.getWidth(), canvas.getHeight(), canvas, "Layer"+(canvas.getLayers().size() + 1)));
+        canvas.getLayers().add(new Layer(canvas.getWidth(), canvas.getHeight(), canvas, "painting.Layer"+(canvas.getLayers().size() + 1)));
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
     }
 
@@ -162,5 +165,10 @@ public class Window extends Pane
     public void setGlow(Effect effect)
     {
         layers.setEffect(effect);
+    }
+
+    public Tool getTool()
+    {
+        return tools.getValue();
     }
 }

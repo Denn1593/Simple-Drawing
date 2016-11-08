@@ -1,3 +1,5 @@
+package tools;
+
 import javafx.scene.paint.Color;
 
 /**
@@ -5,5 +7,5 @@ import javafx.scene.paint.Color;
  */
 public interface Tool
 {
-    public Color[][] paint(int size, Color color);
+    public Color[][] paint(int size, Color color, Color[][] inData);
 }

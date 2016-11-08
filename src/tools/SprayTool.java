@@ -1,4 +1,7 @@
+package tools;
+
 import javafx.scene.paint.Color;
+import tools.Tool;
 
 import java.util.Random;
 
@@ -9,7 +12,7 @@ public class SprayTool implements Tool
 {
     private Random random = new Random();
     @Override
-    public Color[][] paint(int size, Color color)
+    public Color[][] paint(int size, Color color, Color[][] inData)
     {
         Color[][] colors = new Color[size][size];
         for (int i = 0; i < size * 2; i++)

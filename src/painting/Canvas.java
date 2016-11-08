@@ -1,4 +1,6 @@
-import com.sun.corba.se.impl.ior.WireObjectKeyTemplate;
+package painting;
+
+import GUI.Window;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -7,6 +9,8 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+
 
 /**
  * Created by dennis on 11/7/16.
@@ -17,7 +21,6 @@ public class Canvas extends ImageView
     private PixelWriter pixelWriter;
     private int width;
     private int height;
-    private Tool tool = new SprayTool();
     private Window window;
 
     public Canvas(int width, int heigth, Window window)
@@ -56,15 +59,18 @@ public class Canvas extends ImageView
 
     public void updateCanvas(int xStart, int yStart, int xEnd, int yEnd)
     {
-        for (int i = layers.size() - 1; i >= 0; i--)
+        boolean[][] isPainted = new boolean[xEnd - xStart][yEnd - yStart];
+
+        for (int i = 0; i < layers.size(); i++)
         {
             for(int x = xStart; x < xEnd; x++)
             {
                 for (int y = yStart; y < yEnd; y++)
                 {
-                    if(layers.get(i).getColor(x, y) != null)
+                    if(layers.get(i).getColor(x, y) != null && !isPainted[x - xStart][y - yStart])
                     {
                         pixelWriter.setColor(x, y, layers.get(i).getColor(x, y));
+                        isPainted[x - xStart][y - yStart] = true;
                     }
                 }
             }
@@ -74,7 +80,7 @@ public class Canvas extends ImageView
     private void paint(int x, int y)
     {
         int size = window.getSize();
-        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, tool.paint(size, window.getColor()), size);
+        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, window.getTool().paint(size, window.getColor(), null), size);
     }
 
     public void moveDown(int index)

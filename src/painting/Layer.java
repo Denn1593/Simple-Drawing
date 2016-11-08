@@ -1,3 +1,5 @@
+package painting;
+
 import javafx.scene.paint.Color;
 
 /**
