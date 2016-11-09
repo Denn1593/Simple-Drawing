@@ -11,6 +11,7 @@ import painting.Canvas;
 import painting.Layer;
 import tools.BrushTool;
 import tools.SprayTool;
+import tools.RecolorTool;
 import tools.Tool;
 
 /**
@@ -36,7 +37,8 @@ public class Window extends Pane
     ));
     private ComboBox<Tool> tools = new ComboBox<>(FXCollections.observableArrayList(
             new SprayTool(),
-            new BrushTool()
+            new BrushTool(),
+            new RecolorTool()
     ));
 
     public Window(int width, int height, Stage stage)

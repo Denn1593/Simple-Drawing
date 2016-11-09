@@ -11,6 +11,13 @@ import java.util.Random;
 public class SprayTool implements Tool
 {
     private Random random = new Random();
+
+    @Override
+    public boolean canRead()
+    {
+        return false;
+    }
+
     @Override
     public Color[][] paint(int size, Color color, Color[][] inData)
     {

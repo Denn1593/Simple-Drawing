@@ -3,32 +3,33 @@ package tools;
 import javafx.scene.paint.Color;
 
 /**
- * Created by dennis on 11/8/16.
+ * Created by dennis on 11/9/16.
  */
-public class BrushTool implements Tool
+public class RecolorTool implements Tool
 {
     @Override
     public boolean canRead()
     {
-        return false;
+        return true;
     }
 
     @Override
     public Color[][] paint(int size, Color color, Color[][] inData)
     {
-        Color[][] colors = new Color[size][size];
-
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
                 if(isInRange(x, y, size))
                 {
-                    colors[x][y] = color;
+                    if (inData[x][y] != null)
+                    {
+                        inData[x][y] = color;
+                    }
                 }
             }
         }
-        return colors;
+        return inData;
     }
 
     private boolean isInRange(int x, int y, int size)
@@ -42,8 +43,6 @@ public class BrushTool implements Tool
 
     public String toString()
     {
-        return "BrushTool";
+        return "RecolorTool";
     }
-
-
 }

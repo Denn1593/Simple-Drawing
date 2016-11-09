@@ -55,6 +55,7 @@ public class Canvas extends ImageView
             catch (Exception ex)
             {
                 window.setGlow(new DropShadow(5, Color.RED));
+                ex.printStackTrace();
             }
         });
     }
@@ -83,21 +84,23 @@ public class Canvas extends ImageView
     {
         int size = window.getSize();
 
-        /* TODO implemented
         Color[][] inData = new Color[size][size];
 
-        for (int i = 0; i < layers.size(); i++)
+        if(window.getTool().canRead())
         {
-            for (int xx = 0; xx < size; xx++)
+            for (int xx =  x - size / 2; xx < x + size / 2; xx++)
             {
-                for (int yy = 0; yy < size; yy++)
+                for (int yy =  y - size / 2; yy < y + size / 2; yy++)
                 {
-                    if()
+                    if (layers.get(window.getLayer()).getColor(xx, yy) != null)
+                    {
+                        inData[xx - x + size/2][yy - y + size/2] = layers.get(window.getLayer()).getColor(xx, yy);
+                    }
                 }
             }
-        }*/
+        }
 
-        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, window.getTool().paint(size, window.getColor(), null), size);
+        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, window.getTool().paint(size, window.getColor(), inData), size);
     }
 
     public void moveDown(int index)
