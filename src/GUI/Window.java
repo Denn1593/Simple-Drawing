@@ -9,10 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import painting.Canvas;
 import painting.Layer;
-import tools.BrushTool;
-import tools.SprayTool;
-import tools.RecolorTool;
-import tools.Tool;
+import tools.*;
 
 /**
  * Created by dennis on 11/7/16.
@@ -38,7 +35,8 @@ public class Window extends Pane
     private ComboBox<Tool> tools = new ComboBox<>(FXCollections.observableArrayList(
             new SprayTool(),
             new BrushTool(),
-            new RecolorTool()
+            new RecolorTool(),
+            new EraserTool()
     ));
 
     public Window(int width, int height, Stage stage)

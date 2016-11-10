@@ -22,8 +22,10 @@ public class Layer
         layer = new Color[width][height];
     }
 
-    public void paint(int x, int y, Color[][] colors, int size)
+    public void paint(int x, int y, Color[][] colors, int size, boolean[][] erased)
     {
+        boolean hasErased = false;
+
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
@@ -34,10 +36,16 @@ public class Layer
                     {
                         layer[i + x][j + y] = colors[i][j];
                     }
+                    if(erased[i][j])
+                    {
+                        hasErased = true;
+                        System.out.println("POS");
+                        layer[i + x][j + y] = null;
+                    }
                 }
             }
         }
-        canvas.updateCanvas(x, y, x + size, y + size);
+        canvas.updateCanvas(x, y, x + size, y + size, hasErased);
     }
 
     public Color getColor(int x, int y)

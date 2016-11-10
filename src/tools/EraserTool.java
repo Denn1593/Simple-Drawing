@@ -3,38 +3,37 @@ package tools;
 import javafx.scene.paint.Color;
 
 /**
- * Created by dennis on 11/9/16.
+ * Created by dennis on 11/10/16.
  */
-public class RecolorTool implements Tool
+public class EraserTool implements Tool
 {
     @Override
     public boolean[][] erase(int size, Color color, Color[][] inData)
     {
-        return new boolean[size][size];
-    }
+        boolean[][] erase = new boolean[size][size];
 
-    @Override
-    public boolean canRead()
-    {
-        return true;
-    }
-
-    @Override
-    public Color[][] paint(int size, Color color, Color[][] inData)
-    {
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
                 if(isInRange(x, y, size))
                 {
-                    if (inData[x][y] != null)
-                    {
-                        inData[x][y] = color;
-                    }
+                    erase[x][y] = true;
                 }
             }
         }
+        return erase;
+    }
+
+    @Override
+    public boolean canRead()
+    {
+        return false;
+    }
+
+    @Override
+    public Color[][] paint(int size, Color color, Color[][] inData)
+    {
         return inData;
     }
 
@@ -45,10 +44,5 @@ public class RecolorTool implements Tool
             return true;
         }
         return false;
-    }
-
-    public String toString()
-    {
-        return "RecolorTool";
     }
 }

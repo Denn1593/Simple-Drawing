@@ -60,21 +60,30 @@ public class Canvas extends ImageView
         });
     }
 
-    public void updateCanvas(int xStart, int yStart, int xEnd, int yEnd)
+    public void updateCanvas(int xStart, int yStart, int xEnd, int yEnd, boolean hasErased)
     {
         boolean[][] isPainted = new boolean[xEnd - xStart][yEnd - yStart];
 
-        for (int i = 0; i < layers.size(); i++)
+        for(int x = xStart; x < xEnd; x++)
         {
-            for(int x = xStart; x < xEnd; x++)
+            for (int y = yStart; y < yEnd; y++)
             {
-                for (int y = yStart; y < yEnd; y++)
+                boolean allNull = true;
+                for (int i = 0; i < layers.size(); i++)
                 {
-                    if(layers.get(i).getColor(x, y) != null && !isPainted[x - xStart][y - yStart])
+                    if(layers.get(i).getColor(x, y) != null)
                     {
-                        pixelWriter.setColor(x, y, layers.get(i).getColor(x, y));
-                        isPainted[x - xStart][y - yStart] = true;
+                        allNull = false;
+                        if (!isPainted[x - xStart][y - yStart])
+                        {
+                            pixelWriter.setColor(x, y, layers.get(i).getColor(x, y));
+                            isPainted[x - xStart][y - yStart] = true;
+                        }
                     }
+                }
+                if(hasErased && allNull)
+                {
+                    pixelWriter.setColor(x, y, Color.WHITE);
                 }
             }
         }
@@ -100,7 +109,9 @@ public class Canvas extends ImageView
             }
         }
 
-        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2, window.getTool().paint(size, window.getColor(), inData), size);
+        layers.get(window.getLayer()).paint(x - size / 2, y - size / 2,
+                window.getTool().paint(size, window.getColor(), inData), size,
+                window.getTool().erase(size, window.getColor(), inData));
     }
 
     public void moveDown(int index)
@@ -109,7 +120,7 @@ public class Canvas extends ImageView
         {
             Collections.swap(layers, index, index + 1);
         }
-        updateCanvas(0, 0, width, height);
+        updateCanvas(0, 0, width, height, true);
     }
 
     public void moveUp(int index)
@@ -118,7 +129,7 @@ public class Canvas extends ImageView
         {
             Collections.swap(layers, index, index - 1);
         }
-        updateCanvas(0, 0, width, height);
+        updateCanvas(0, 0, width, height, true);
     }
 
     public ArrayList<Layer> destroyLayer(int index)
@@ -132,7 +143,7 @@ public class Canvas extends ImageView
                 pixelWriter.setColor(x, y, Color.WHITE);
             }
         }
-        updateCanvas(0, 0, width, height);
+        updateCanvas(0, 0, width, height, true);
 
         return layers;
     }

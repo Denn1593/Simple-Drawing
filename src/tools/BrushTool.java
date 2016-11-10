@@ -7,6 +7,14 @@ import javafx.scene.paint.Color;
  */
 public class BrushTool implements Tool
 {
+
+
+    @Override
+    public boolean[][] erase(int size, Color color, Color[][] inData)
+    {
+        return new boolean[size][size];
+    }
+
     @Override
     public boolean canRead()
     {

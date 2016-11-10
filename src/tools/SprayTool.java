@@ -12,6 +12,13 @@ public class SprayTool implements Tool
 {
     private Random random = new Random();
 
+
+    @Override
+    public boolean[][] erase(int size, Color color, Color[][] inData)
+    {
+        return new boolean[size][size];
+    }
+
     @Override
     public boolean canRead()
     {
