@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 /**
  * Created by dennis on 11/10/16.
  */
-public class EraserTool implements Tool
+public class ColorEraserTool implements Tool
 {
     @Override
     public boolean[][] erase(int size, Color color, Color[][] inData)
@@ -18,7 +18,10 @@ public class EraserTool implements Tool
             {
                 if(isInRange(x, y, size))
                 {
-                    erase[x][y] = true;
+                    if (inData[x][y] == color)
+                    {
+                        erase[x][y] = true;
+                    }
                 }
             }
         }
@@ -28,7 +31,7 @@ public class EraserTool implements Tool
     @Override
     public boolean canRead()
     {
-        return false;
+        return true;
     }
 
     @Override
@@ -40,10 +43,5 @@ public class EraserTool implements Tool
     private boolean isInRange(int x, int y, int size)
     {
         return(Math.sqrt((x - size/2) * (x - size/2) + (y - size/2) * (y - size/2)) < size/2);
-    }
-
-    public String toString()
-    {
-        return "EraserTool";
     }
 }

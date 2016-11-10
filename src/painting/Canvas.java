@@ -83,7 +83,14 @@ public class Canvas extends ImageView
                 }
                 if(hasErased && allNull)
                 {
-                    pixelWriter.setColor(x, y, Color.WHITE);
+                    try
+                    {
+                        pixelWriter.setColor(x, y, Color.WHITE);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
             }
         }

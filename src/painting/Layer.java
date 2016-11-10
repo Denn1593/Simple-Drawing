@@ -39,7 +39,6 @@ public class Layer
                     if(erased[i][j])
                     {
                         hasErased = true;
-                        System.out.println("POS");
                         layer[i + x][j + y] = null;
                     }
                 }

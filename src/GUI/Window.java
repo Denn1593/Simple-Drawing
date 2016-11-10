@@ -36,7 +36,8 @@ public class Window extends Pane
             new SprayTool(),
             new BrushTool(),
             new RecolorTool(),
-            new EraserTool()
+            new EraserTool(),
+            new ColorEraserTool()
     ));
 
     public Window(int width, int height, Stage stage)
