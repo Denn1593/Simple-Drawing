@@ -1,14 +1,12 @@
 package painting;
 
-import GUI.Window;
+import gui.Window;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 

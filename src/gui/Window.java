@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
@@ -51,6 +51,7 @@ public class Window extends Pane
 
         layers.getItems().add(new Layer(400, 400, canvas, "Layer"+canvas.getLayers().size()));
         layers.getSelectionModel().select(0);
+        layers.setPrefWidth(250);
 
         newDrawing = new Button("New");
         newDrawing.setOnAction(e-> {
@@ -100,6 +101,9 @@ public class Window extends Pane
 
         this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer, saveDrawing);
 
+        stage.setWidth(60 + 250 + width);
+        stage.setHeight(height + 105);
+
         stage.widthProperty().addListener(e->updateLayout(width, height));
         stage.heightProperty().addListener(e->updateLayout(width, height));
     }
@@ -119,6 +123,9 @@ public class Window extends Pane
         canvas = new Canvas(width, height, this);
         this.getChildren().set(0, canvas);
 
+        stage.setWidth(60 + 250 + width);
+        stage.setHeight(height + newDrawing.getHeight() + 80);
+
         updateLayout(width, height);
 
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
@@ -128,9 +135,6 @@ public class Window extends Pane
     private void updateLayout(int width, int height)
     {
         double margin = 20;
-
-        stage.setWidth(margin * 3 + layers.getWidth() + width);
-        stage.setHeight(height + newDrawing.getHeight() + margin * 4);
 
         this.getChildren().get(0).setLayoutX(margin);
         this.getChildren().get(0).setLayoutY(margin);

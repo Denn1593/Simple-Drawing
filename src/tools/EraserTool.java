@@ -1,6 +1,7 @@
 package tools;
 
 import javafx.scene.paint.Color;
+import tools.util.ToolUtilities;
 
 /**
  * Created by dennis on 11/10/16.
@@ -16,7 +17,7 @@ public class EraserTool implements Tool
         {
             for (int y = 0; y < size; y++)
             {
-                if(isInRange(x, y, size))
+                if(ToolUtilities.isInRange(x, y, size))
                 {
                     erase[x][y] = true;
                 }
@@ -35,11 +36,6 @@ public class EraserTool implements Tool
     public Color[][] paint(int size, Color color, Color[][] inData)
     {
         return inData;
-    }
-
-    private boolean isInRange(int x, int y, int size)
-    {
-        return(Math.sqrt((x - size/2) * (x - size/2) + (y - size/2) * (y - size/2)) < size/2);
     }
 
     public String toString()

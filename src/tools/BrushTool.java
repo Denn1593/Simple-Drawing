@@ -1,6 +1,7 @@
 package tools;
 
 import javafx.scene.paint.Color;
+import tools.util.ToolUtilities;
 
 /**
  * Created by dennis on 11/8/16.
@@ -30,22 +31,13 @@ public class BrushTool implements Tool
         {
             for (int y = 0; y < size; y++)
             {
-                if(isInRange(x, y, size))
+                if(ToolUtilities.isInRange(x, y, size))
                 {
                     colors[x][y] = color;
                 }
             }
         }
         return colors;
-    }
-
-    private boolean isInRange(int x, int y, int size)
-    {
-        if(Math.sqrt((x - size/2) * (x - size/2) + (y - size/2) * (y - size/2)) < size/2)
-        {
-            return true;
-        }
-        return false;
     }
 
     public String toString()

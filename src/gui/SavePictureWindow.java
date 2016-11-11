@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import files.ImageExporter;
 import javafx.scene.Scene;
