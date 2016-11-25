@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Spraytool.iml" filepath="$PROJECT_DIR$/Spraytool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Simple-Drawing.iml" filepath="$PROJECT_DIR$/.idea/Simple-Drawing.iml" />
     </modules>
   </component>
 </project>
