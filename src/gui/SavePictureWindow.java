@@ -1,6 +1,9 @@
 package gui;
 
+import files.FileLoader;
 import files.ImageExporter;
+import files.formats.CanvasFile;
+import files.formats.javafxworkarounds.LayerConverter;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import painting.Canvas;
@@ -17,14 +20,17 @@ public class SavePictureWindow extends Stage
     private Button save;
     private Button export;
 
-    public SavePictureWindow(Canvas canvas)
+    public SavePictureWindow(Canvas canvas, int width, int height)
     {
         name = new TextField();
 
         save = new Button("Save");
         save.setOnAction(e->
         {
-
+            if(FileLoader.saveFile(new CanvasFile(LayerConverter.layerToSerializable(canvas), name.getText(), width, height)))
+            {
+                this.close();
+            }
         });
 
         export = new Button("export to png");

@@ -1,15 +1,19 @@
 package gui;
 
+import files.FileLoader;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import painting.Canvas;
 import painting.Layer;
 import tools.*;
+
+import java.util.ArrayList;
 
 /**
  * Created by dennis on 11/7/16.
@@ -21,6 +25,7 @@ public class Window extends Pane
     private Canvas canvas;
     private Button newDrawing;
     private Button saveDrawing;
+    private Button loadDrawing;
     private Button addLayer;
     private Button removeLayer;
     private Button moveUp;
@@ -46,7 +51,7 @@ public class Window extends Pane
         this.stage = stage;
         stage.setTitle("Simple Drawing");
 
-        canvas = new Canvas(width, height, this);
+        canvas = new Canvas(width, height, this, null);
         canvas.setLayoutX(20);
         canvas.setLayoutY(20);
 
@@ -66,11 +71,28 @@ public class Window extends Pane
         saveDrawing = new Button("Save");
         saveDrawing.setOnAction(e->
         {
-            SavePictureWindow popup = new SavePictureWindow(canvas);
+            SavePictureWindow popup = new SavePictureWindow(canvas, canvas.getWidth(), canvas.getHeight());
             popup.initModality(Modality.APPLICATION_MODAL);
             popup.initOwner(stage);
             popup.show();
             popup.fixLayout();
+        });
+
+        loadDrawing = new Button("Load");
+        loadDrawing.setOnAction(e->
+        {
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Canvas file", "*.can");
+            fileChooser.getExtensionFilters().addAll(filter);
+
+            ArrayList<Layer> layers = FileLoader.loadFile(fileChooser.showOpenDialog(stage));
+
+            int newWidth = layers.get(0).getDimensions()[0];
+            int newHeight = layers.get(0).getDimensions()[1];
+
+            Canvas canvas = new Canvas(newWidth, newHeight, this, layers);
+            canvas.fixCanvasPointer(canvas);
+            newPicture(newWidth, newHeight, canvas);
         });
 
         addLayer = new Button("Add");
@@ -100,7 +122,7 @@ public class Window extends Pane
         size.setValue(24);
         tools.setValue(new SprayTool());
 
-        this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer, saveDrawing);
+        this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer, saveDrawing, loadDrawing);
 
         stage.setWidth(60 + 250 + width);
         stage.setHeight(height + 105);
@@ -119,9 +141,16 @@ public class Window extends Pane
         return size.getValue();
     }
 
-    public void newPicture(int width, int height)
+    public void newPicture(int width, int height, Canvas newCanvas)
     {
-        canvas = new Canvas(width, height, this);
+        if(newCanvas != null)
+        {
+            canvas = newCanvas;
+        }
+        else
+        {
+            canvas = new Canvas(width, height, this, null);
+        }
         this.getChildren().set(0, canvas);
 
         stage.setWidth(60 + 250 + width);
@@ -131,6 +160,7 @@ public class Window extends Pane
 
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
         layers.getSelectionModel().select(0);
+        canvas.updateCanvas(0, 0, width, height, true);
     }
 
     private void updateLayout(int width, int height)
@@ -166,11 +196,14 @@ public class Window extends Pane
         size.setLayoutX(margin * 3 + tools.getWidth() + colorPicker.getWidth());
         size.setLayoutY(margin * 2 + height);
 
-        newDrawing.setLayoutX(margin * 4 + + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
+        newDrawing.setLayoutX(margin * 4 + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
         newDrawing.setLayoutY(margin * 2 + height);
 
-        saveDrawing.setLayoutX(margin * 5 + + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth());
+        saveDrawing.setLayoutX(margin * 5 + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth());
         saveDrawing.setLayoutY(margin * 2 + height);
+
+        loadDrawing.setLayoutX(margin * 6 + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth() + saveDrawing.getWidth());
+        loadDrawing.setLayoutY(margin * 2 + height);
     }
 
     private void createLayer()

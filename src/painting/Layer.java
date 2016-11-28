@@ -2,10 +2,12 @@ package painting;
 
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
+
 /**
  * Created by dennis on 11/7/16.
  */
-public class Layer
+public class Layer implements Serializable
 {
     private Canvas canvas;
     private Color[][] layer;
@@ -20,6 +22,14 @@ public class Layer
         this.height = height;
         this.canvas = canvas;
         layer = new Color[width][height];
+    }
+
+    public Layer(Color[][] colors, int width, int height, String name)
+    {
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        layer = colors;
     }
 
     public void paint(int x, int y, Color[][] colors, int size, boolean[][] erased)
@@ -57,6 +67,17 @@ public class Layer
         {
             return  null;
         }
+    }
+
+    public int[] getDimensions()
+    {
+        int[] dimensions = {width, height};
+        return dimensions;
+    }
+
+    public void setCanvas(Canvas canvas)
+    {
+        this.canvas = canvas;
     }
 
     public String toString()

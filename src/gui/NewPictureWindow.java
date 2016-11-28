@@ -92,7 +92,7 @@ public class NewPictureWindow extends Stage
 
         if(valid)
         {
-            window.newPicture(X, Y);
+            window.newPicture(X, Y, null);
             this.close();
         }
     }

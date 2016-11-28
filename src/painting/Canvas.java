@@ -7,6 +7,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -15,7 +16,7 @@ import java.util.Collections;
 /**
  * Created by dennis on 11/7/16.
  */
-public class Canvas extends ImageView
+public class Canvas extends ImageView implements Serializable
 {
     private ArrayList<Layer> layers = new ArrayList<>();
     private PixelWriter pixelWriter;
@@ -23,12 +24,22 @@ public class Canvas extends ImageView
     private int height;
     private Window window;
 
-    public Canvas(int width, int heigth, Window window)
+    public Canvas(int width, int heigth, Window window, ArrayList<Layer> layers)
     {
+        if(layers != null)
+        {
+            this.layers = layers;
+        }
+        else
+        {
+            this.layers.add(new Layer(width, heigth, this, "Layer1"));
+        }
         this.window = window;
         this.width = width;
         this.height = heigth;
 
+        System.out.println(width);
+        System.out.println(heigth);
         WritableImage image = new WritableImage(width, heigth);
         pixelWriter = image.getPixelWriter();
 
@@ -41,8 +52,6 @@ public class Canvas extends ImageView
                 pixelWriter.setColor(x, y, Color.WHITE);
             }
         }
-
-        layers.add(new Layer(width, heigth, this, "Layer1"));
 
         this.setOnMouseDragged(e->
         {
@@ -151,6 +160,14 @@ public class Canvas extends ImageView
         updateCanvas(0, 0, width, height, true);
 
         return layers;
+    }
+
+    public void fixCanvasPointer(Canvas canvas)
+    {
+        for (int i = 0; i < layers.size(); i++)
+        {
+            layers.get(i).setCanvas(canvas);
+        }
     }
 
     public ArrayList<Layer> getLayers()
