@@ -1,6 +1,6 @@
 package painting.history;
 
-import painting.Layer;
+import painting.layers.Layer;
 
 import java.util.ArrayList;
 

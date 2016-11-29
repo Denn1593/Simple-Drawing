@@ -26,16 +26,16 @@ public class EdgeTool implements Tool {
             {
                 if(inData[x][y] == null && ToolUtilities.isInRange(x, y, size))
                 {
-                    for (int xx = 0; xx < size / 2; xx++)
+                    for (int xx = 0; xx < size; xx++)
                     {
-                        for (int yy = 0; yy < size / 2; yy++)
+                        for (int yy = 0; yy < size; yy++)
                         {
                             try
                             {
-                                if(ToolUtilities.isInRange(xx, yy, size/2))
+                                if(ToolUtilities.isInRange(xx, yy, size))
                                 {
-                                    if (inData[x + xx - size / 4][y + yy - size / 4] != null &&
-                                            inData[x + xx - size / 4][y + yy - size / 4] != color)
+                                    if (inData[x + xx - size / 2][y + yy - size / 2] != null &&
+                                            inData[x + xx - size / 2][y + yy - size / 2] != color)
                                     {
                                         inData[x][y] = color;
                                     }

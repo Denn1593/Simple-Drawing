@@ -2,8 +2,7 @@ package files;
 
 import files.formats.CanvasFile;
 import files.formats.javafxworkarounds.LayerConverter;
-import files.formats.javafxworkarounds.SerializableLayer;
-import painting.Layer;
+import painting.layers.Layer;
 
 import java.io.*;
 import java.util.ArrayList;

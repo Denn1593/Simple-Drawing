@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import painting.layers.Layer;
 
 import java.io.Serializable;
 import java.util.ArrayList;

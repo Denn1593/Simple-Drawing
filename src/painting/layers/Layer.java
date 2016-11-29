@@ -1,6 +1,7 @@
-package painting;
+package painting.layers;
 
 import javafx.scene.paint.Color;
+import painting.Canvas;
 
 import java.io.Serializable;
 
@@ -66,6 +67,36 @@ public class Layer implements Serializable
         catch (Exception e)
         {
             return  null;
+        }
+    }
+
+    public void shiftLayer(Direction direction, boolean isShiftPressed)
+    {
+        int factor = 1;
+
+        if(isShiftPressed)
+        {
+            factor = 10;
+        }
+
+        switch (direction)
+        {
+            case UP:
+            {
+                break;
+            }
+            case DOWN:
+            {
+                break;
+            }
+            case LEFT:
+            {
+                break;
+            }
+            case RIGHT:
+            {
+                break;
+            }
         }
     }
 

@@ -10,7 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import painting.Canvas;
-import painting.Layer;
+import painting.layers.Layer;
 import tools.*;
 
 import java.util.ArrayList;

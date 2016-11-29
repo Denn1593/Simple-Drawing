@@ -3,7 +3,7 @@ package files.formats.javafxworkarounds;
 import files.formats.CanvasFile;
 import javafx.scene.paint.Color;
 import painting.Canvas;
-import painting.Layer;
+import painting.layers.Layer;
 
 import java.util.ArrayList;
 
