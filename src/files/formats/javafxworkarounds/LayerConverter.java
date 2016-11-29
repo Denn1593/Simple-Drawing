@@ -30,7 +30,6 @@ public class LayerConverter
                     if(layer.getColor(x, y) != null)
                     {
                         colors[x][y] = new SerializableColor(layer.getColor(x, y).getRed(), layer.getColor(x, y).getGreen(), layer.getColor(x, y).getBlue());
-                        System.out.println("i saved a color");
                     }
                 }
             }
@@ -45,11 +44,6 @@ public class LayerConverter
         ArrayList<SerializableLayer> layers = canvasFile.getLayers();
         int[] dimensions = canvasFile.getDimensions();
         ArrayList<Layer> realLayers = new ArrayList<>();
-
-        System.out.println(canvasFile.getDimensions()[0] + "din");
-        System.out.println(canvasFile.getDimensions()[1] + "mor");
-
-        System.out.println(dimensions[0] + "Why the fuck???");
 
         for (int i = 0; i < layers.size(); i++)
         {

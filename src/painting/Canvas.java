@@ -38,8 +38,6 @@ public class Canvas extends ImageView implements Serializable
         this.width = width;
         this.height = heigth;
 
-        System.out.println(width);
-        System.out.println(heigth);
         WritableImage image = new WritableImage(width, heigth);
         pixelWriter = image.getPixelWriter();
 

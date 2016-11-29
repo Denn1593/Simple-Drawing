@@ -24,7 +24,7 @@ public class EdgeTool implements Tool {
         {
             for (int y = 0; y < size; y++)
             {
-                if(inData[x][y] == null)
+                if(inData[x][y] == null && ToolUtilities.isInRange(x, y, size))
                 {
                     for (int xx = 0; xx < size / 2; xx++)
                     {
@@ -32,7 +32,7 @@ public class EdgeTool implements Tool {
                         {
                             try
                             {
-                                if(ToolUtilities.isInRange(xx - size/64, yy - size/64, size/2))
+                                if(ToolUtilities.isInRange(xx, yy, size/2))
                                 {
                                     if (inData[x + xx - size / 4][y + yy - size / 4] != null &&
                                             inData[x + xx - size / 4][y + yy - size / 4] != color)
