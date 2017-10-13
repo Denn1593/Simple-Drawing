@@ -1,9 +1,21 @@
 package gui;
 
+import effects.Pixelate;
+import effects.Ripples;
+import effects.BoxWarp;
+import effects.Warp;
+import effects.base.LayerEffect;
 import files.FileLoader;
+import files.ImageExporter;
+import files.formats.CanvasFile;
+import files.formats.javafxworkarounds.LayerConverter;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
+import javafx.scene.image.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -13,6 +25,7 @@ import painting.Canvas;
 import painting.layers.Layer;
 import tools.*;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -21,16 +34,25 @@ import java.util.ArrayList;
 public class Window extends Pane
 {
     private Stage stage;
+    private WritableImage pointerImage = new WritableImage(5, 5);
+    private WritableImage showColorImage = new WritableImage(10, 10);
+    private ImageView showColor = new ImageView(showColorImage);
+    private ImageView pointer = new ImageView(pointerImage);
     private ColorPicker colorPicker;
     private Canvas canvas;
-    private Button newDrawing;
-    private Button saveDrawing;
-    private Button loadDrawing;
+    private MenuBar menuBar = new MenuBar();
     private Button addLayer;
     private Button removeLayer;
     private Button moveUp;
     private Button moveDown;
-    private ListView<Layer> layers = new ListView<>();
+    private Label cursorInfo = new Label();
+    private int windowWidth;
+    private int windowHeight;
+    private ListView<Layer> layers = new ListView()
+    {
+        @Override
+        public void requestFocus(){}
+    };
     private ComboBox<Integer> size = new ComboBox<>(FXCollections.observableArrayList(
             6, 8, 10, 12, 14, 16, 18, 20,
             22, 24, 26, 28, 30, 32, 34, 36,
@@ -43,7 +65,8 @@ public class Window extends Pane
             new RecolorTool(),
             new EraserTool(),
             new ColorEraserTool(),
-            new EdgeTool()
+            new EdgeTool(),
+            new FillTool()
     ));
 
     public Window(int width, int height, Stage stage)
@@ -51,16 +74,68 @@ public class Window extends Pane
         this.stage = stage;
         stage.setTitle("Simple Drawing");
 
+        PixelWriter pi = pointerImage.getPixelWriter();
+        pi.setColor(2, 0, Color.WHITE);
+        pi.setColor(2, 1, Color.WHITE);
+        pi.setColor(0, 2, Color.WHITE);
+        pi.setColor(1, 2, Color.WHITE);
+        pi.setColor(2, 2, Color.WHITE);
+        pi.setColor(3, 2, Color.WHITE);
+        pi.setColor(4, 2, Color.WHITE);
+        pi.setColor(2, 3, Color.WHITE);
+        pi.setColor(2, 4, Color.WHITE);
+        pointer.setEffect(new DropShadow(2, Color.BLACK));
+        pointer.setLayoutX(-100);
+        pointer.setLayoutY(-100);
+
+        Menu fileMenu = new Menu("File");
+
+        Menu newMenu = new Menu("new");
+
+        MenuItem newProject = new MenuItem("Project");
+        MenuItem newProjectFromImage = new MenuItem("Project From Image");
+
+        newMenu.getItems().addAll(newProject, newProjectFromImage);
+
+        MenuItem loadDrawing = new MenuItem("Load Project");
+        MenuItem saveDrawing = new MenuItem("Save Project");
+        MenuItem exportDrawing = new MenuItem("Export to PNG");
+
+        Menu effectsMenu = new Menu("Effects");
+
+        MenuItem pixelate = new MenuItem("Pixelate");
+        MenuItem warp = new MenuItem("Warp");
+        MenuItem stretch = new MenuItem("Box Warp");
+        MenuItem ripples = new MenuItem("Ripples");
+
+        menuBar.getMenus().addAll(fileMenu, effectsMenu);
+
+        fileMenu.getItems().addAll(newMenu, loadDrawing, saveDrawing, exportDrawing);
+        effectsMenu.getItems().addAll(pixelate, warp, stretch, ripples);
+
         canvas = new Canvas(width, height, this, null);
         canvas.setLayoutX(20);
         canvas.setLayoutY(20);
+        canvas.setEffect(new DropShadow(5, Color.BLACK));
+        canvas.setOnMouseMoved(this::setShowColor);
 
         layers.getItems().add(new Layer(400, 400, canvas, "Layer"+canvas.getLayers().size()));
         layers.getSelectionModel().select(0);
         layers.setPrefWidth(250);
 
-        newDrawing = new Button("New");
-        newDrawing.setOnAction(e-> {
+        layers.setOnMouseClicked(e->
+        {
+            if(e.getClickCount() == 2)
+            {
+                if(layers.getSelectionModel().getSelectedItem() != null)
+                {
+                    LayerWindow layerWindow = new LayerWindow(layers.getSelectionModel().getSelectedIndex(), this, layers.getSelectionModel().getSelectedItem().getName());
+                    layerWindow.show();
+                }
+            }
+        });
+
+        newProject.setOnAction(e-> {
             Stage popup = new NewPictureWindow(this);
             popup.initModality(Modality.APPLICATION_MODAL);
             popup.initOwner(stage);
@@ -68,31 +143,128 @@ public class Window extends Pane
 
         });
 
-        saveDrawing = new Button("Save");
-        saveDrawing.setOnAction(e->
+        newProjectFromImage.setOnAction(e->
         {
-            SavePictureWindow popup = new SavePictureWindow(canvas, canvas.getWidth(), canvas.getHeight());
-            popup.initModality(Modality.APPLICATION_MODAL);
-            popup.initOwner(stage);
-            popup.show();
-            popup.fixLayout();
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg");
+            fileChooser.getExtensionFilters().addAll(filter);
+
+            File file = fileChooser.showOpenDialog(stage);
+
+            Image image = new Image(file.toURI().toString());
+
+            Color[][] colors = new Color[(int) image.getWidth()][(int) image.getHeight()];
+
+            PixelReader pixelReader = image.getPixelReader();
+
+            for (int i = 0; i < image.getWidth(); i++)
+            {
+                for (int j = 0; j < image.getHeight(); j++)
+                {
+                    colors[i][j] = pixelReader.getColor(i, j);
+                }
+            }
+            Layer imageLayer = new Layer(colors, (int) image.getWidth(), (int) image.getHeight(), "Layer1");
+
+            ArrayList<Layer> layerList = new ArrayList<>();
+            layerList.add(imageLayer);
+
+            Canvas newCanvas = new Canvas((int) image.getWidth(), (int) image.getHeight(), this, layerList);
+
+            imageLayer.setCanvas(newCanvas);
+
+            newPicture((int) image.getWidth(), (int) image.getHeight(), newCanvas);
+
         });
 
-        loadDrawing = new Button("Load");
+        saveDrawing.setOnAction(e->
+        {
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Canvas file", "*.can");
+            fileChooser.getExtensionFilters().addAll(filter);
+
+            File file = fileChooser.showSaveDialog(stage);
+
+            if(FileLoader.saveFile(new CanvasFile(LayerConverter.layerToSerializable(canvas), file.getName(), width, height), file))
+            {
+                new MessageWindow("Project saved", "Project saved successfully!", null);
+            }
+            else
+            {
+                new MessageWindow("Error", "Project could not be saved!", null);
+            }
+        });
+
         loadDrawing.setOnAction(e->
         {
             FileChooser fileChooser = new FileChooser();
             FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Canvas file", "*.can");
             fileChooser.getExtensionFilters().addAll(filter);
 
-            ArrayList<Layer> layers = FileLoader.loadFile(fileChooser.showOpenDialog(stage));
+            try
+            {
+                ArrayList<Layer> layers = FileLoader.loadFile(fileChooser.showOpenDialog(stage));
 
-            int newWidth = layers.get(0).getDimensions()[0];
-            int newHeight = layers.get(0).getDimensions()[1];
+                int newWidth = layers.get(0).getDimensions()[0];
+                int newHeight = layers.get(0).getDimensions()[1];
 
-            Canvas canvas = new Canvas(newWidth, newHeight, this, layers);
-            canvas.fixCanvasPointer(canvas);
-            newPicture(newWidth, newHeight, canvas);
+                Canvas canvas = new Canvas(newWidth, newHeight, this, layers);
+                canvas.fixCanvasPointer(canvas);
+                newPicture(newWidth, newHeight, canvas);
+            }
+            catch (Exception e1)
+            {
+                MessageWindow messageWindow = new MessageWindow("Error", "Invalid or corrupt file!", null);
+            }
+
+        });
+
+        exportDrawing.setOnAction(e->
+        {
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("PNG Image", "*.png");
+            fileChooser.getExtensionFilters().addAll(filter);
+
+            File file = fileChooser.showSaveDialog(stage);
+
+            if(ImageExporter.exportImage(file, canvas.getJavafxWorkaroundnumber324923847289()))
+            {
+                new MessageWindow("Image exported", "Image exported successfully!", null);
+            }
+            else
+            {
+                new MessageWindow("Error", "Image could not be exported!", null);
+            }
+        });
+
+        //EFFECTS
+
+        pixelate.setOnAction(e->
+        {
+            Pixelate effect = new Pixelate("Pixelate");
+
+            EffectWindow effectWindow = new EffectWindow(effect, this);
+        });
+
+        warp.setOnAction(e->
+        {
+            Warp effect = new Warp("Warp", canvas.getWidth(), canvas.getHeight());
+
+            EffectWindow effectWindow = new EffectWindow(effect, this);
+        });
+
+        stretch.setOnAction(e->
+        {
+            BoxWarp effect = new BoxWarp("Box Warp");
+
+            EffectWindow effectWindow = new EffectWindow(effect, this);
+        });
+
+        ripples.setOnAction(e->
+        {
+            Ripples effect = new Ripples("Ripples", canvas.getWidth(), canvas.getHeight());
+
+            EffectWindow effectWindow = new EffectWindow(effect, this);
         });
 
         addLayer = new Button("Add");
@@ -122,13 +294,10 @@ public class Window extends Pane
         size.setValue(24);
         tools.setValue(new SprayTool());
 
-        this.getChildren().addAll(canvas, colorPicker, size, newDrawing, layers, addLayer, tools, moveDown, moveUp, removeLayer, saveDrawing, loadDrawing);
+        this.getChildren().addAll(menuBar, canvas, colorPicker, size, layers, addLayer, tools, moveDown, moveUp, removeLayer, cursorInfo, pointer, showColor);
 
-        stage.setWidth(60 + 250 + width);
-        stage.setHeight(height + 105);
-
-        stage.widthProperty().addListener(e->updateLayout(width, height));
-        stage.heightProperty().addListener(e->updateLayout(width, height));
+        stage.setWidth(100 + 250 + width);
+        stage.setHeight(height + 145);
     }
 
     public Color getColor()
@@ -151,65 +320,150 @@ public class Window extends Pane
         {
             canvas = new Canvas(width, height, this, null);
         }
-        this.getChildren().set(0, canvas);
+        this.getChildren().remove(1);
+        this.getChildren().add(1, canvas);
 
-        stage.setWidth(60 + 250 + width);
-        stage.setHeight(height + newDrawing.getHeight() + 80);
-
-        updateLayout(width, height);
+        updateLayout(windowWidth, windowHeight);
 
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
         layers.getSelectionModel().select(0);
+        canvas.setEffect(new DropShadow(5, Color.BLACK));
+        canvas.setOnMouseMoved(this::setShowColor);
         canvas.updateCanvas(0, 0, width, height, true);
     }
 
-    private void updateLayout(int width, int height)
+    public boolean applyEffect(LayerEffect effect)
+    {
+        try
+        {
+            canvas.applyEffect(effect);
+            layers.setEffect(null);
+            return true;
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            layers.setEffect(new DropShadow(5, Color.RED));
+            return false;
+        }
+    }
+
+    public void updateLayout(int windowWidth, int windowHeight)
     {
         double margin = 20;
 
-        this.getChildren().get(0).setLayoutX(margin);
-        this.getChildren().get(0).setLayoutY(margin);
+        this.windowHeight = windowHeight;
+        this.windowWidth = windowWidth;
 
-        addLayer.setLayoutX(margin * 2 + width);
-        addLayer.setLayoutY(height - addLayer.getHeight() + margin);
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
 
-        removeLayer.setLayoutX(margin * 3 + width + addLayer.getWidth());
-        removeLayer.setLayoutY(height - removeLayer.getHeight() + margin);
+        menuBar.setPrefWidth(windowWidth);
 
-        moveUp.setLayoutX(margin * 4 + width + addLayer.getWidth() + removeLayer.getWidth());
-        moveUp.setLayoutY(height - moveUp.getHeight() + margin);
+        addLayer.setLayoutX(windowWidth - 250 - margin);
+        addLayer.setLayoutY(windowHeight - colorPicker.getHeight() - margin);
 
-        moveDown.setLayoutX(margin * 4.25 + width + addLayer.getWidth() + moveUp.getWidth() + removeLayer.getWidth());
-        moveDown.setLayoutY(height - moveDown.getHeight() + margin);
+        removeLayer.setLayoutX(windowWidth - 250 + addLayer.getWidth());
+        removeLayer.setLayoutY(windowHeight - colorPicker.getHeight() - margin);
 
+        moveUp.setLayoutX(margin + windowWidth - 250 + addLayer.getWidth() + removeLayer.getWidth());
+        moveUp.setLayoutY(windowHeight - colorPicker.getHeight() - margin);
+
+        moveDown.setLayoutX(margin * 1.5 + windowWidth - 250 + addLayer.getWidth() + moveUp.getWidth() + removeLayer.getWidth());
+        moveDown.setLayoutY(windowHeight - colorPicker.getHeight() - margin);
+
+        this.getChildren().get(1).setLayoutX(Math.floor((windowWidth - 250 - margin * 2) / 2 - canvas.getWidth() / 2));
+        this.getChildren().get(1).setLayoutY(Math.floor((windowHeight - margin - colorPicker.getHeight() + menuBar.getHeight()) / 2 - canvas.getHeight() / 2));
 
         colorPicker.setLayoutX(margin * 2 + tools.getWidth());
-        colorPicker.setLayoutY(margin * 2 + height);
+        colorPicker.setLayoutY(windowHeight - colorPicker.getHeight() - margin);
 
         tools.setLayoutX(margin);
-        tools.setLayoutY(margin * 2 + height);
+        tools.setLayoutY(windowHeight - tools.getHeight() - margin);
 
-        layers.setLayoutX(margin * 2 + width);
-        layers.setLayoutY(margin);
-        layers.setPrefHeight(height - addLayer.getHeight() - margin);
+        layers.setLayoutX(windowWidth - 250 - margin);
+        layers.setLayoutY(margin + menuBar.getHeight());
+        layers.setPrefHeight(windowHeight - addLayer.getHeight() - menuBar.getHeight() - margin * 3);
 
         size.setLayoutX(margin * 3 + tools.getWidth() + colorPicker.getWidth());
-        size.setLayoutY(margin * 2 + height);
+        size.setLayoutY(windowHeight - size.getHeight() - margin);
 
-        newDrawing.setLayoutX(margin * 4 + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
-        newDrawing.setLayoutY(margin * 2 + height);
+        cursorInfo.setLayoutX(margin * 4 + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
+        cursorInfo.setLayoutY(windowHeight - size.getHeight() - margin + 5);
 
-        saveDrawing.setLayoutX(margin * 5 + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth());
-        saveDrawing.setLayoutY(margin * 2 + height);
+        showColor.setLayoutX(margin * 5 + cursorInfo.getWidth() + tools.getWidth() + colorPicker.getWidth() + size.getWidth());
+        showColor.setLayoutY(windowHeight - size.getHeight() - margin + 8);
+    }
 
-        loadDrawing.setLayoutX(margin * 6 + tools.getWidth() + colorPicker.getWidth() + size.getWidth() + newDrawing.getWidth() + saveDrawing.getWidth());
-        loadDrawing.setLayoutY(margin * 2 + height);
+    public void setShowColor(MouseEvent e)
+    {
+        cursorInfo.setText("X: " + (int) e.getX() + " Y: " + (int) e.getY());
+        Color color = canvas.getLayers().get(getLayer()).getColor((int) e.getX(), (int) e.getY());
+
+        PixelWriter pixelWriter = showColorImage.getPixelWriter();
+
+        if(color == null)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    if (i == j || i == -j + 9)
+                    {
+                        pixelWriter.setColor(i, j, Color.RED);
+                    } else
+                    {
+                        pixelWriter.setColor(i, j, Color.WHITE);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    pixelWriter.setColor(i, j, color);
+                }
+            }
+        }
+    }
+
+    public void setPaintColor(Color color)
+    {
+        if(color != null)
+        {
+            colorPicker.valueProperty().setValue(color);
+        }
+    }
+
+    public void createBindings()
+    {
+        stage.getScene().setOnKeyPressed(e->
+        {
+            canvas.getLayers().get(getLayer()).shiftLayer(e, e.isShiftDown());
+            canvas.updateCanvas(0, 0, canvas.getWidth(), canvas.getHeight(), true);
+        });
     }
 
     private void createLayer()
     {
         canvas.getLayers().add(new Layer(canvas.getWidth(), canvas.getHeight(), canvas, "Layer"+(canvas.getLayers().size() + 1)));
         layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
+    }
+
+    public void setLayerName(String name, int index)
+    {
+        canvas.getLayers().get(index).setName(name);
+        layers.setItems(null);
+        layers.setItems(FXCollections.observableArrayList(canvas.getLayers()));
+        layers.getSelectionModel().select(index);
+    }
+
+    public void setPointer(int x, int y)
+    {
+        pointer.setLayoutX(canvas.getLayoutX() + x);
+        pointer.setLayoutY(canvas.getLayoutY() + y);
     }
 
     public int getLayer()

@@ -12,11 +12,11 @@ import java.io.IOException;
  */
 public class ImageExporter
 {
-    public static boolean exportImage(String name, Image image)
+    public static boolean exportImage(File file, Image image)
     {
         try
         {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", new File(name + ".png"));
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
             return true;
         }
         catch (IOException e)

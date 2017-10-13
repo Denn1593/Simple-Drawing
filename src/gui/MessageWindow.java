@@ -49,6 +49,7 @@ public class MessageWindow extends Stage
 
         this.setScene(new Scene(pane));
         this.setTitle(title);
+        this.setAlwaysOnTop(true);
         this.initModality(Modality.APPLICATION_MODAL);
         this.show();
 

@@ -8,14 +8,21 @@ import java.io.Serializable;
 public class SerializableLayer implements Serializable
 {
     private SerializableColor[][] layer;
+    private String name;
 
-    public SerializableLayer(SerializableColor[][] colors)
+    public SerializableLayer(SerializableColor[][] colors, String name)
     {
         layer = colors;
+        this.name = name;
     }
 
     public SerializableColor getColor(int x, int y)
     {
         return layer[x][y];
+    }
+
+    public String getName()
+    {
+        return name;
     }
 }

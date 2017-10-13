@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -54,12 +55,26 @@ public class NewPictureWindow extends Stage
         Pane pane = new Pane();
 
         accept.setOnAction(e->newPicture());
+        x.setOnKeyPressed(e-> {
+            if(e.getCode() == KeyCode.ENTER)
+            {
+                newPicture();
+            }
+        });
+
+        y.setOnKeyPressed(e-> {
+            if(e.getCode() == KeyCode.ENTER)
+            {
+                newPicture();
+            }
+        });
 
         cancel.setOnAction(e->this.close());
 
         pane.getChildren().addAll(x, y, labelX, labelY, accept, cancel);
 
         this.setScene(new Scene(pane, 200, 150));
+        this.setAlwaysOnTop(true);
     }
 
     private void newPicture()

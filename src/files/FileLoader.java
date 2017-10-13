@@ -12,18 +12,16 @@ import java.util.ArrayList;
  */
 public class FileLoader
 {
-    //TODO: how to save javafx nodes
-    public static boolean saveFile(CanvasFile canvasFile)
+    public static boolean saveFile(CanvasFile canvasFile, File file)
     {
         ObjectOutputStream out = null;
         try
         {
-            out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(canvasFile.getFileName() + ".can")));
+            out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
             out.writeObject(canvasFile);
         }
         catch (IOException e)
         {
-            e.printStackTrace();
             return false;
         }
         finally
@@ -34,7 +32,6 @@ public class FileLoader
             }
             catch (IOException e)
             {
-                e.printStackTrace();
                 return false;
             }
         }
@@ -53,7 +50,6 @@ public class FileLoader
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             return null;
         }
         finally
@@ -64,13 +60,10 @@ public class FileLoader
             }
             catch (Exception e)
             {
-                e.printStackTrace();
                 return null;
             }
         }
 
-        System.out.println(canvasFile.getDimensions()[0] + "ass");
-        System.out.println(canvasFile.getDimensions()[1] + "ass");
         return LayerConverter.serializableToLayers(canvasFile);
     }
 }

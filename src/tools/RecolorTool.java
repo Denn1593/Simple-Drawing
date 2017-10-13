@@ -15,6 +15,12 @@ public class RecolorTool implements Tool
     }
 
     @Override
+    public boolean[][] eraseAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        return new boolean[width][height];
+    }
+
+    @Override
     public boolean canRead()
     {
         return true;
@@ -23,6 +29,7 @@ public class RecolorTool implements Tool
     @Override
     public Color[][] paint(int size, Color color, Color[][] inData)
     {
+
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
@@ -30,6 +37,34 @@ public class RecolorTool implements Tool
                 if(ToolUtilities.isInRange(x, y, size))
                 {
                     if (inData[x][y] != null)
+                    {
+                        inData[x][y] = color;
+                    }
+                }
+            }
+        }
+        return inData;
+    }
+
+    @Override
+    public Color[][] paintAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        Color targetColor = inData[mouseX][mouseY];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if(targetColor == null)
+                {
+                    if (inData[x][y] != null)
+                    {
+                        inData[x][y] = color;
+                    }
+                }
+                else
+                {
+                    if(inData[x][y] == targetColor)
                     {
                         inData[x][y] = color;
                     }

@@ -20,9 +20,15 @@ public class SprayTool implements Tool
     }
 
     @Override
+    public boolean[][] eraseAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        return new boolean[width][height];
+    }
+
+    @Override
     public boolean canRead()
     {
-        return false;
+        return true;
     }
 
     @Override
@@ -37,6 +43,35 @@ public class SprayTool implements Tool
             colors[(int) (radius * Math.cos(rotation)) + size/2][(int)(radius * Math.sin(rotation)) + size/2] = color;
         }
         return colors;
+    }
+
+    @Override
+    public Color[][] paintAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        Color targetColor = inData[mouseX][mouseY];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                y = y + random.nextInt(size);
+                if(y < height)
+                {
+                    if(targetColor == null)
+                    {
+                        inData[x][y] = color;
+                    }
+                    else
+                    {
+                        if(inData[x][y] == targetColor)
+                        {
+                            inData[x][y] = color;
+                        }
+                    }
+                }
+            }
+        }
+        return inData;
     }
 
     public String toString()

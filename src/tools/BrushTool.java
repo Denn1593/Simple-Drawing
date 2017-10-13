@@ -17,6 +17,12 @@ public class BrushTool implements Tool
     }
 
     @Override
+    public boolean[][] eraseAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        return new boolean[width][height];
+    }
+
+    @Override
     public boolean canRead()
     {
         return false;
@@ -38,6 +44,21 @@ public class BrushTool implements Tool
             }
         }
         return colors;
+    }
+
+    @Override
+    public Color[][] paintAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        Color[][] outPut = new Color[width][height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                outPut[x][y] = color;
+            }
+        }
+        return outPut;
     }
 
     public String toString()

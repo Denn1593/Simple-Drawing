@@ -19,10 +19,16 @@ public class Main extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        primaryStage.setScene(new Scene(new Window(400, 400, primaryStage)));
+        Window window = new Window(640, 480, primaryStage);
+        primaryStage.setScene(new Scene(window));
+        primaryStage.widthProperty().addListener(e-> window.updateLayout((int) (primaryStage.getWidth() - primaryStage.getScene().getX() * 2), (int) (primaryStage.getHeight() - primaryStage.getScene().getY())));
+        primaryStage.heightProperty().addListener(e-> window.updateLayout((int) (primaryStage.getWidth() - primaryStage.getScene().getX() * 2), (int) (primaryStage.getHeight() - primaryStage.getScene().getY())));
+        primaryStage.getIcons().add(new Image("splash.png"));
+        window.createBindings();
         primaryStage.show();
+        window.updateLayout((int) (primaryStage.getWidth() - primaryStage.getScene().getX() * 2), (int) (primaryStage.getHeight() - primaryStage.getScene().getY()));
 
-        MessageWindow messageWindow = new MessageWindow("Welcome", "Welcome to Spr4yT00lsens\nart creation tool.", new Image("splash.png"));
+        //MessageWindow messageWindow = new MessageWindow("Welcome", "Welcome to Spr4yT00lsens\nart creation tool.", new Image("splash.png"));
 
     }
 }

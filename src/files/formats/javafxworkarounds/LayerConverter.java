@@ -33,7 +33,7 @@ public class LayerConverter
                     }
                 }
             }
-            convertedLayers.add(new SerializableLayer(colors));
+            convertedLayers.add(new SerializableLayer(colors, layer.getName()));
         }
 
         return convertedLayers;
@@ -63,7 +63,7 @@ public class LayerConverter
                     }
                 }
             }
-            realLayers.add(new Layer(colors, dimensions[0], dimensions[1], "Layer"+(i + 1)));
+            realLayers.add(new Layer(colors, dimensions[0], dimensions[1], layer.getName()));
         }
 
         return realLayers;

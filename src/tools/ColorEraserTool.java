@@ -30,6 +30,24 @@ public class ColorEraserTool implements Tool
     }
 
     @Override
+    public boolean[][] eraseAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
+    {
+        boolean[][] erased = new boolean[width][height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if(inData[x][y] == color)
+                {
+                    erased[x][y] = true;
+                }
+            }
+        }
+        return erased;
+    }
+
+    @Override
     public boolean canRead()
     {
         return true;
@@ -37,6 +55,12 @@ public class ColorEraserTool implements Tool
 
     @Override
     public Color[][] paint(int size, Color color, Color[][] inData)
+    {
+        return inData;
+    }
+
+    @Override
+    public Color[][] paintAll(int size, Color color, Color[][] inData, int width, int height, int mouseX, int mouseY)
     {
         return inData;
     }
